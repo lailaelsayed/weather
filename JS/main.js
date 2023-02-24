@@ -14,73 +14,72 @@ const days = ['Sunday' , 'Monday' , 'Tuesday' ,'Wednesday', 'Thursday', 'Friday'
 var inputLocation = document.getElementById('search');
 
 var weatherapi; // kol el api
+var final;
 async function get(x){
-    // weatherapi = fetch(`https://api.weatherapi.com/v1/forecast.json?key=572e08fb1d7547f58d8151525211205&q=${x}&days=3`)
-    
-    var req = new XMLHttpRequest();
-    req.open('Get' , `https://api.weatherapi.com/v1/forecast.json?key=572e08fb1d7547f58d8151525211205&q=${x}&days=3`)
-    req.send();
-    req.addEventListener('readystatechange' , function(){
-        if(req.readyState == 4 && req.status == 200){
-            weatherapi = JSON.parse(req.response); 
-            date(); 
-            display();
-        }
-    })
+    weatherapi =await fetch(`https://api.weatherapi.com/v1/forecast.json?key=572e08fb1d7547f58d8151525211205&q=${x}&days=3`)
+    final = await weatherapi.json();
+    date();
+    display();
+    // var req = new XMLHttpRequest();
+    // req.open('Get' , `https://api.weatherapi.com/v1/forecast.json?key=572e08fb1d7547f58d8151525211205&q=${x}&days=3`)
+    // req.send();
+    // req.addEventListener('readystatechange' , function(){
+    //     if(req.readyState == 4 && req.status == 200){
+    //         weatherapi = JSON.parse(req.response); 
+    //         date(); 
+    //         display();
+    //     }
+    // })
 }
-// async function test(){
-//     await get('cairo');
-//     await date(); 
-//     await display();
 
-// }
 
 
 window.addEventListener('load', function(){
      get('cairo');
-    // test();
+    
 })
 
 inputLocation.addEventListener('input' , function(){
      get(inputLocation.value)
+     
    
 })
 
 
 let currentDate ;  
 async function date(){
-    currentDate = new Date(weatherapi.forecast.forecastday[0].date);
+    currentDate = new Date(final.forecast.forecastday[0].date);
 }
 
 function display(){
     //today
     document.querySelector('#today .head .day').innerHTML =  days[currentDate.getDay()];
     document.querySelector('#today .head .date').innerHTML = currentDate.getDate() + months[currentDate.getMonth()];
-    document.querySelector('#today .weather .country h4').innerHTML = weatherapi.location.name;
+    document.querySelector('#today .weather .country h4').innerHTML = final.location.name;
     document.querySelector('#today .weather .temperature h1').innerHTML = `
-        ${weatherapi.current.temp_c}  <sup>o</sup>C`
+        ${final.current.temp_c}  <sup>o</sup>C`
 
-    document.querySelector('#today .weather .condition img').setAttribute('src',`https://${weatherapi.current.condition.icon}`) 
-    document.querySelector('#today .weather .condition h6').innerHTML = weatherapi.current.condition.text;
+    document.querySelector('#today .weather .condition img').setAttribute('src',`https://${final.current.condition.icon}`) 
+    document.querySelector('#today .weather .condition h6').innerHTML = final.current.condition.text;
     
 
     //tomorrow
     document.querySelector('#tomorrow .head .day').innerHTML = days[(currentDate.getDay()+1)%7];
-    document.querySelector('#tomorrow .weather .img  img').setAttribute('src',`https://${weatherapi.forecast.forecastday[1].day.condition.icon}`)
+    document.querySelector('#tomorrow .weather .img  img').setAttribute('src',`https://${final.forecast.forecastday[1].day.condition.icon}`)
     document.querySelector('#tomorrow .weather .max h1').innerHTML = `
-    ${weatherapi.forecast.forecastday[1].day.maxtemp_c}  <sup>o</sup>C`
+    ${final.forecast.forecastday[1].day.maxtemp_c}  <sup>o</sup>C`
     document.querySelector('#tomorrow .weather .min h6').innerHTML = `
-    ${weatherapi.forecast.forecastday[1].day.mintemp_c}  <sup>o</sup>C`
-    document.querySelector('#tomorrow .weather .condition h6').innerHTML = weatherapi.forecast.forecastday[1].day.condition.text;
+    ${final.forecast.forecastday[1].day.mintemp_c}  <sup>o</sup>C`
+    document.querySelector('#tomorrow .weather .condition h6').innerHTML = final.forecast.forecastday[1].day.condition.text;
 
     //after tomorrow
     document.querySelector('#after .head .day').innerHTML = days[(currentDate.getDay()+2)%7];
-    document.querySelector('#after .weather .img  img').setAttribute('src',`https://${weatherapi.forecast.forecastday[2].day.condition.icon}`)
+    document.querySelector('#after .weather .img  img').setAttribute('src',`https://${final.forecast.forecastday[2].day.condition.icon}`)
     document.querySelector('#after .weather .max h1').innerHTML = `
-    ${weatherapi.forecast.forecastday[2].day.maxtemp_c}  <sup>o</sup>C`
+    ${final.forecast.forecastday[2].day.maxtemp_c}  <sup>o</sup>C`
     document.querySelector('#after .weather .min h6').innerHTML = `
-    ${weatherapi.forecast.forecastday[2].day.mintemp_c}  <sup>o</sup>C`
-    document.querySelector('#after .weather .condition h6').innerHTML = weatherapi.forecast.forecastday[2].day.condition.text;
+    ${final.forecast.forecastday[2].day.mintemp_c}  <sup>o</sup>C`
+    document.querySelector('#after .weather .condition h6').innerHTML = final.forecast.forecastday[2].day.condition.text;
 }
 
 
